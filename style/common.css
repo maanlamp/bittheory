@@ -1,0 +1,28 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	text-rendering: optimizeLegibility;
+}
+
+body {
+	background: black;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 100vh;
+}
+
+p {
+	font-family: monospace;
+	color: rgba(255, 255, 255, .25);
+	width: 100%;
+	text-align: center;
+}
+
+p>span {
+	margin-left: .5rem;
+	color: rgba(255, 255, 255, .5);
+}
