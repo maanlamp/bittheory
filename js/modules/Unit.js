@@ -89,7 +89,26 @@ export default class Unit {
 		this.context.stroke();
 	}
 	
-	move() {
-		this.position.lerp(this.target.position, 1/60);
+	static setPosition(to, selectedUnits) {
+		let i = selectedUnits.length;
+		const count = i;
+		if (selectedUnits instanceof Array) {
+			while (i--) {
+				const pos = Vector2.from(to);
+				pos.add(
+					Math.lenDirX(count * 10, 360 / count * i),
+					Math.lenDirY(count * 10, 360 / count * i)
+				);
+				selectedUnits[i].target.position.set(pos);
+			}
+		} else if (selectedUnits instanceof Unit) {
+			selectedUnits.target.position.set(to.x, to.y);
+		} else {
+			throw new Error(`Cannot edit target position of ${selectedUnits}: ${typeof selectedUnits} is not an Array or Unit`);
+		}
+	}
+	
+	move(deltaTime) {
+		this.position.lerp(this.target.position, deltaTime);
 	}
 }

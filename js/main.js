@@ -6,6 +6,14 @@ Math.degrees = (radians) => {
 	return radians * 180 / Math.PI;
 }
 
+Math.lenDirX = (len, angle) => {
+	return len * Math.cos(Math.radians(angle));
+}
+
+Math.lenDirY = (len, angle) => {
+	return len * Math.sin(Math.radians(angle));
+}
+
 import Vector2 from "./modules/Vector2.js";
 function getMousePos(canvas, evt) {
 	const rect = canvas.getBoundingClientRect(),
@@ -32,7 +40,7 @@ function setup() {
 	return loadJSON("/data/sprites.json").then(json => {
 		loadImage(`${json.location}/${json.sheets[0].name}`).then(spritesheet => {
 			const sprites = json.sheets[0].sprites;
-			let i = 50;
+			let i = 10;
 			while (i--) {
 				GAME.add(new Unit(Math.random()*canvas.width, Math.random()*canvas.height, new Sprite(spritesheet, sprites[i%sprites.length].x, sprites[i%sprites.length].y, sprites[i%sprites.length].w, sprites[i%sprites.length].h), GAME.layers[0], context));
 			}
@@ -60,7 +68,7 @@ function update(currentTime) {
 		ii = GAME.layers[i].objects.length;
 		while (ii--) {
 			GAME.layers[i].objects[ii].draw();
-			GAME.layers[i].objects[ii].move();
+			GAME.layers[i].objects[ii].move(deltaTime);
 		}
 	}
 	
@@ -84,7 +92,7 @@ function update(currentTime) {
 let fps = 0;
 function updateFPS() {
 	fps = Math.round(1 / deltaTime);
-	setTimeout(updateFPS, 1000);
+	setTimeout(updateFPS, 1000/4);
 }
 updateFPS();
 
@@ -92,10 +100,7 @@ window.addEventListener("mousedown", event => {
 	if (event.button == 2) {
 		const units = GAME.selectedUnits,
 					pos = getMousePos(canvas, event);
-		let 	i = units.length;
-		while (i--) {
-			units[i].target.position.set(pos.x, pos.y);
-		}
+		Unit.setPosition(pos, units);
 	} else {
 		const pos = getMousePos(canvas, event);
 		GAME.selection.active = true;

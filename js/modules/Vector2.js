@@ -42,11 +42,11 @@ export default class Vector2 {
 		let deltaX = other.x - this.x,
 				deltaY = other.y - this.y,
 				angle = Math.atan2(deltaY, deltaX) + Math.PI / 2;
-		if (mode === "deg" || mode === "degrees") {
+		if (mode.toLowerCase().includes("deg")) {
 			angle = Math.degrees(angle);
 			return (angle < 0) ? angle + 360 : angle;
 		}
-		else if (mode === "rad" || mode === "radians") {
+		else if (mode.toLowerCase().includes("rad")) {
 			return angle;
 		} else {
 			throw new Error(`Unknown angle mode "${mode}"`);
@@ -80,7 +80,7 @@ export default class Vector2 {
 		return new Vector2(this.x, this.y);
 	}
 	
-	from(other) {
+	static from(other) {
 		if (other instanceof Array) {
 			if (other.length > 2) {
 				let returnArray = [];
