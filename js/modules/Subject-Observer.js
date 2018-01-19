@@ -3,17 +3,6 @@ export class Subject {
 		this.observers = [];
 	}
 	
-	subscribe(observer) {
-		this.observers.push(observer);
-	}
-	
-	unsubscribe(observer) {
-		let i = this.observers.indexOf(observer);
-		if (i > -1) {
-			this.observers.splice(i, 1);
-		}
-	}
-	
 	notify(observer) {
 		let i = this.observers.indexOf(observer);
 		if (i > -1) {
@@ -30,7 +19,18 @@ export class Subject {
 }
 
 export class Observer {
+	subscribe(other) {
+		other.observers.push(this);
+	}
+	
+	unsubscribe(other) {
+		let i = other.observers.indexOf(this);
+		if (i > -1) {
+			other.observers.splice(i, 1);
+		}
+	}
+	
 	update(subject) {
-		console.log(`Updated ${subject}!`);
+		console.log(`${subject} notified ${this}!`);
 	}
 }

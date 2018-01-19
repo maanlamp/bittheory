@@ -90,8 +90,7 @@ export default class Vector2 {
 				return returnArray;
 			}
 			return new Vector2(other[0], other[1]);
-		}
-		else if (other instanceof Object) {
+		} else if (other instanceof Object) {
 			if (other instanceof Vector2) {
 				return other.copy()
 			}
