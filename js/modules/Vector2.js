@@ -4,6 +4,36 @@ export default class Vector2 {
 		this.y = y;
 	}
 	
+	static lenDir(len, angle) {
+		const x = len * Math.cos(Math.radians(angle)),
+					y = len * Math.sin(Math.radians(angle));
+		return new Vector2(x, y);
+	}
+	
+	round(other) {
+		this.set(Math.round(this.x), Math.round(this.y));
+		return this;
+	}
+	rounded(other) {
+		return this.copy().round(other);
+	}
+	
+	ceil(other) {
+		this.set(Math.ceil(this.x), Math.ceil(this.y));
+		return this;
+	}
+	ceiled(other) {
+		return this.copy().ceil(other);
+	}
+	
+	floor(other) {
+		this.set(Math.floor(this.x), Math.floor(this.y));
+		return this;
+	}
+	floored(other) {
+		return this.copy().floor(other);
+	}
+	
 	set(x, y = null) {
 		if (x instanceof Vector2) {
 			this.x = x.x;
@@ -21,8 +51,6 @@ export default class Vector2 {
 	
 	lerp(other, factor = .5) {
 		let value = this.add(other.subtracted(this).multiplied(factor));
-		value.x = (value.x > -0.001 && value.x < 0.001) ? 0 : value.x;
-		value.y = (value.y > -0.001 && value.y < 0.001) ? 0 : value.y;
 		return value;
 	}
 	

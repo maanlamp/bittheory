@@ -6,14 +6,6 @@ Math.degrees = (radians) => {
 	return radians * 180 / Math.PI;
 }
 
-Math.lenDirX = (len, angle) => {
-	return len * Math.cos(Math.radians(angle));
-}
-
-Math.lenDirY = (len, angle) => {
-	return len * Math.sin(Math.radians(angle));
-}
-
 import Vector2 from "./modules/Vector2.js";
 function getMousePos(canvas, evt) {
 	const rect = canvas.getBoundingClientRect(),

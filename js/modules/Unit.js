@@ -95,10 +95,7 @@ export default class Unit {
 		if (selectedUnits instanceof Array) {
 			while (i--) {
 				const pos = Vector2.from(to);
-				pos.add(
-					Math.lenDirX(count * 10, 360 / count * i),
-					Math.lenDirY(count * 10, 360 / count * i)
-				);
+				pos.add(Vector2.lenDir(count * 10, 360 / count * i));
 				selectedUnits[i].target.position.set(pos);
 			}
 		} else if (selectedUnits instanceof Unit) {
@@ -109,6 +106,8 @@ export default class Unit {
 	}
 	
 	move(deltaTime) {
-		this.position.lerp(this.target.position, deltaTime);
+		if (!this.position.rounded().equals(this.target.position.rounded())) {
+			this.position.lerp(this.target.position, deltaTime);
+		}
 	}
 }
