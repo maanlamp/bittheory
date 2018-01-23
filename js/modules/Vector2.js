@@ -5,9 +5,17 @@ export default class Vector2 {
 	}
 	
 	static lenDir(len, angle) {
-		const x = len * Math.cos(Math.radians(angle)),
-					y = len * Math.sin(Math.radians(angle));
+		const x = len * Math.cos(Vector2.radians(angle)),
+					y = len * Math.sin(Vector2.radians(angle));
 		return new Vector2(x, y);
+	}
+	
+	static radians(degrees) {
+		return degrees * Math.PI / 180;
+	}
+
+	static degrees(radians) {
+		return radians * 180 / Math.PI;
 	}
 	
 	round(other) {
@@ -71,7 +79,7 @@ export default class Vector2 {
 				deltaY = other.y - this.y,
 				angle = Math.atan2(deltaY, deltaX) + Math.PI / 2;
 		if (mode.toLowerCase().includes("deg")) {
-			angle = Math.degrees(angle);
+			angle = Vector2.degrees(angle);
 			return (angle < 0) ? angle + 360 : angle;
 		}
 		else if (mode.toLowerCase().includes("rad")) {

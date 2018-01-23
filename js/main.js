@@ -1,11 +1,3 @@
-Math.radians = (degrees) => {
-	return degrees * Math.PI / 180;
-}
-
-Math.degrees = (radians) => {
-	return radians * 180 / Math.PI;
-}
-
 import Vector2 from "./modules/Vector2.js";
 function getMousePos(canvas, evt) {
 	const rect = canvas.getBoundingClientRect(),

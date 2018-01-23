@@ -53,9 +53,9 @@ export default class Unit {
 	}
 	
 	set direction(to) {
-		if (to.constructor.name === "Number") {
+		if (to instanceof Number) {
 			this.target = {position: new Vector2(Math.cos(to), Math.sin(to))}
-		} else if (to.constructor.name === "Object") {
+		} else if (to instanceof Object) {
 			if (isNaN(to.angle)) {
 				throw new Error(`"${to.constructor.name}: ${to}" is missing an angle property`);
 			}
@@ -78,8 +78,8 @@ export default class Unit {
 		}
 		this.context.save();
 		this.context.translate(this.position.x, this.position.y);
-		this.context.rotate(Math.radians(this.direction));
-		this.context.drawImage(this.sprite.sheet, this.sprite.x, this.sprite.y, this.sprite.w, this.sprite.h, -this.sprite.w / 2, -this.sprite.h / 2, this.sprite.w, this.sprite.h);
+		this.context.rotate(Vector2.radians(this.direction));
+		this.context.drawImage(this.sprite.buffer, -this.sprite.w/2, -this.sprite.h/2);
 		this.context.restore();
 		
 		//Debug
