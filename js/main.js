@@ -1,4 +1,12 @@
 import Vector2 from "./modules/Vector2.js";
+import Unit from "./modules/Unit.js";
+import {Spritesheet, BufferSprite} from "./modules/Sprite.js";
+import {loadJSON, loadImage} from "./modules/Load.js";
+import Layer from "./modules/Layer.js";
+import Game from "./modules/Game.js";
+import Camera from "./modules/Camera.js";
+import Keybind from "./modules/Keybind.js";
+
 function getMousePos(canvas, evt) {
 	const rect = canvas.getBoundingClientRect(),
 				scaleX = canvas.width / rect.width,
@@ -6,44 +14,45 @@ function getMousePos(canvas, evt) {
 	return new Vector2((evt.clientX - rect.left) * scaleX, (evt.clientY - rect.top) * scaleY);
 }
 
-import Unit from "./modules/Unit.js";
-import Sprite from "./modules/Sprite.js";
-import {loadJSON, loadImage} from "./modules/Load.js";
-import Layer from "./modules/Layer.js";
-import Game from "./modules/Game.js";
-import Camera from "./modules/Camera.js";
-import Keybind from "./modules/Keybind.js";
-
-const canvas = document.querySelector("#viewPort"),
-			context = canvas.getContext("2d"),
-			GAME = new Game();
+const GAME = new Game();
+GAME.canvas = document.querySelector("#viewPort");
+GAME.context = GAME.canvas.getContext("2d");
+			
 
 //Setup game functions
 function setup() {
-	GAME.layers.push(new Layer(GAME.layers));
-	return loadJSON("/data/sprites.json").then(json => {
-		loadImage(`${json.location}/${json.sheets[0].name}`).then(spritesheet => {
-			const sprites = json.sheets[0].sprites;
-			let i = 10;
-			while (i--) {
-				GAME.add(new Unit(Math.random()*canvas.width, Math.random()*canvas.height, new Sprite(spritesheet, sprites[i%sprites.length].x, sprites[i%sprites.length].y, sprites[i%sprites.length].w, sprites[i%sprites.length].h), GAME.layers[0], context));
-			}
+	return new Promise(resolve => {
+		let promises = [];
+		GAME.layers.push(new Layer(GAME.layers));
+		GAME.spritesheets.push(new Spritesheet());
+		loadJSON("/data/sprites.json").then(json => {
+			json.folders.forEach(folder => {
+				folder.sprites.forEach(sprite => {
+					promises.push(loadImage(`${json.root}/${folder.name}/${sprite.name}.png`));
+				});
+			});
+			Promise.all(promises).then(resolvedPromises => {
+				resolvedPromises.forEach(image => {
+					GAME.spritesheets[0].define(new BufferSprite(image, image.src));
+				});
+				resolve(GAME);
+			});
 		});
 	});
 }
 
 let deltaTime = 1/60,
 		lastTime = 0;
-context.fillStyle = "#212135";
-context.strokeStyle = "limeGreen";
+GAME.context.fillStyle = "#212135";
+GAME.context.strokeStyle = "limeGreen";
 function update(currentTime) {
 	deltaTime = (currentTime - lastTime) / 1000;
 	
-	context.fillRect(0, 0, canvas.width, canvas.height);
+	GAME.context.fillRect(0, 0, GAME.canvas.width, GAME.canvas.height);
 	
 	if (!GAME.camera.position.equals(GAME.camera.target)) {
-		GAME.camera.position.lerp(GAME.camera.target, 1/10);
-		context.translate(GAME.camera.position.x, GAME.camera.position.y);
+		GAME.camera.position.interpolate(GAME.camera.target, 1/10);
+		GAME.context.translate(GAME.camera.position.x, GAME.camera.position.y);
 	}
 	
 	let i = GAME.layers.length,
@@ -56,17 +65,15 @@ function update(currentTime) {
 		}
 	}
 	
-	const prevfill = context.fillStyle;
-	context.font = "18px 'Fira Mono', monospace";
-	context.fillStyle = "white";
-	context.fillText(`Closed alpha programme - Version ${GAME.version}`, 10, 28);
-	context.fillText(`fps: ${fps}/60`, 10, 48);
-	context.fillStyle = prevfill;
+	const prevfill = GAME.context.fillStyle;
+	GAME.context.font = "18px 'Fira Mono', monospace";
+	GAME.context.fillStyle = "white";
+	GAME.context.fillText(`Closed alpha programme - Version ${GAME.version}`, 10, 28);
+	GAME.context.fillText(`fps: ${fps}/60`, 10, 48);
+	GAME.context.fillStyle = prevfill;
 	
 	if (GAME.selection.active) {
-		const x = GAME.selection.start.x - GAME.camera.position.x,
-					y = GAME.selection.start.y - GAME.camera.position.y;
-		context.strokeRect(x, y, GAME.selection.w, GAME.selection.h);
+		GAME.context.strokeRect(GAME.selection.start.x, GAME.selection.start.y, GAME.selection.w, GAME.selection.h);
 	}
 	
 	requestAnimationFrame(update);
@@ -83,10 +90,10 @@ updateFPS();
 window.addEventListener("mousedown", event => {
 	if (event.button == 2) {
 		const units = GAME.selectedUnits,
-					pos = getMousePos(canvas, event);
+					pos = getMousePos(GAME.canvas, event);
 		Unit.setPosition(pos, units);
 	} else {
-		const pos = getMousePos(canvas, event);
+		const pos = getMousePos(GAME.canvas, event);
 		GAME.selection.active = true;
 		GAME.selection.reset(pos);
 		GAME.selection.update(pos);
@@ -95,7 +102,7 @@ window.addEventListener("mousedown", event => {
 window.addEventListener("mousemove", event => {
 	if (event.button == 2) return;
 	if (event.buttons) {
-		const pos = getMousePos(canvas, event);
+		const pos = getMousePos(GAME.canvas, event);
 		GAME.selection.update(pos);
 	}
 });
@@ -184,6 +191,27 @@ window.addEventListener("keyup", event => {
 });
 
 //Actual game
-setup()
-update();
-console.log(GAME);
+setup().then(game => {
+	console.log(game);
+	game.add(
+		new Unit(
+			100,
+			100,
+			game.spritesheets[0],
+			"alien/commander.png",
+			game.layers[0],
+			GAME
+		)
+	);
+	game.add(
+		new Unit(
+			300,
+			300,
+			game.spritesheets[0],
+			"human/grunt4.png",
+			game.layers[0],
+			GAME
+		)
+	);
+	update();
+});

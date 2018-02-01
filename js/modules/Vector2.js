@@ -57,13 +57,23 @@ export default class Vector2 {
 		return (this.x === other.x && this.y === other.y);
 	}
 	
-	lerp(other, factor = .5) {
+	fuzzyEquals(other) {
+		return (this.rounded().x === other.rounded().x && this.rounded().y === other.rounded().y);
+	}
+	
+	interpolate(other, factor) {
 		let value = this.add(other.subtracted(this).multiplied(factor));
 		return value;
 	}
+	interpolated(other, factor) {
+		return this.copy().interpolate(other, factor);
+	}
 	
-	lerped(other, factor = .5) {
-		return this.copy().lerp(other, factor);
+	lerp(other) {
+		return this.interpolate(other, .5);
+	}
+	lerped(other) {
+		return this.interpolated(other, .5);
 	}
 	
 	get magnitude() {

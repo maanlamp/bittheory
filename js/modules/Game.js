@@ -25,6 +25,7 @@ export default class Game {
 	constructor() {
 		this.layers = [];
 		this.units = [];
+		this.spritesheets = [];
 		this.selection = new Selection();
 		this.version = 0.1;
 	}

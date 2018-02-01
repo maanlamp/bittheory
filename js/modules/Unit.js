@@ -1,13 +1,15 @@
 import Vector2 from "./Vector2.js";
 
 export default class Unit {
-	constructor(x, y, sprite, layer, context) {
-		this.context = context;
+	constructor(x, y, sheet, spriteName, layer, game) {
+		this.game = game;
+		this.context = this.game.context;
 		this.position = new Vector2(x, y);
-		this.sprite = sprite;
+		this.sheet = sheet;
+		this.sprite = this.sheet.get(spriteName);
 		this.target = {position: this.position.copy()};
 		this.selected = false;
-		this.selectionSize = Math.max(this.sprite.w, this.sprite.h) / 2;
+		this.selectionSize = Math.max(this.sprite.width, this.sprite.height) / 2;
 		this.layer = layer;
 		this.layer.objects.push(this);
 	}
@@ -79,14 +81,16 @@ export default class Unit {
 		this.context.save();
 		this.context.translate(this.position.x, this.position.y);
 		this.context.rotate(Vector2.radians(this.direction));
-		this.context.drawImage(this.sprite.buffer, -this.sprite.w/2, -this.sprite.h/2);
+		this.context.drawImage(this.sheet.buffer, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, -this.sprite.width/2, -this.sprite.height/2, this.sprite.width, this.sprite.height);
 		this.context.restore();
 		
 		//Debug
-		this.context.beginPath();
-		this.context.moveTo(this.position.x, this.position.y);
-		this.context.lineTo(this.target.position.x, this.target.position.y);
-		this.context.stroke();
+		if (!this.position.fuzzyEquals(this.target.position)) {
+			this.context.beginPath();
+			this.context.moveTo(this.position.x, this.position.y);
+			this.context.lineTo(this.target.position.x, this.target.position.y);
+			this.context.stroke();
+		}
 	}
 	
 	static setPosition(to, selectedUnits) {
@@ -106,8 +110,8 @@ export default class Unit {
 	}
 	
 	move(deltaTime) {
-		if (!this.position.rounded().equals(this.target.position.rounded())) {
-			this.position.lerp(this.target.position, deltaTime);
+		if (!this.position.fuzzyEquals(this.target.position)) {
+			this.position.interpolate(this.target.position, deltaTime);
 		}
 	}
 }
