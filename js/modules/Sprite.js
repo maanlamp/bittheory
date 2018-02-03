@@ -1,3 +1,5 @@
+import Vector2 from "./Vector2.js";
+
 export class Spritesheet {
 	constructor() {
 		this.buffer = document.createElement("CANVAS");
@@ -25,7 +27,7 @@ export class Spritesheet {
 		
 		//Draw the new image and push it into existence
 		this.context.drawImage(bufferSprite.img, x, y);
-		this.existingSprites.push(new Sprite(bufferSprite.name, bufferSprite.x, bufferSprite.y, bufferSprite.width, bufferSprite.height));
+		this.existingSprites.push(new Sprite(bufferSprite.name, bufferSprite.x, bufferSprite.y, bufferSprite.width, bufferSprite.height, bufferSprite.offset, bufferSprite.exhausts));
 	}
 	
 	get(name) {
@@ -40,22 +42,26 @@ export class Spritesheet {
 }
 
 class Sprite {
-	constructor(name, x, y, w, h) {
+	constructor(name, x, y, w, h, offset, exhausts) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.width = w;
 		this.height = h;
+		this.offset = offset;
+		this.exhausts = exhausts;
 	}
 }
 
 export class BufferSprite {
-	constructor(img, name) {
+	constructor(img, name, offset, exhausts) {
 		this.img = img;
 		this.name = img.src;
 		this.x = 0;
 		this.y = 0;
 		this.width = this.img.width;
 		this.height = this.img.height;
+		this.offset = offset;
+		this.exhausts = exhausts;
 	}
 }

@@ -1,7 +1,7 @@
 export default class Layer {
-	constructor(parent) {
-		this.parent = parent;
+	constructor(game) {
 		this.objects = [];
+		this.game = game;
 	}
 	
 	get index() {
@@ -17,14 +17,26 @@ export default class Layer {
 	}
 	
 	toFront() {
-		let me = this.parent.splice(this.getIndex(), 1);
-		this.parent.push(me);
+		let i = this.game.layers.length;
+		while (i--) {
+			if (this.game.layers[i] == this) {
+				return;
+			}
+		}
+		const me = this.game.layers.splice(i, 1);
+		this.game.layers.push(me);
 		return this;
 	}
 	
 	toBack() {
-		let me = this.parent.splice(this.getIndex(), 1);
-		this.parent.unshift(me);
+		let i = this.game.layers.length;
+		while (i--) {
+			if (this.game.layers[i] == this) {
+				return;
+			}
+		}
+		const me = this.game.layers.splice(i, 1);
+		this.game.layers.unshift(me);
 		return this;
 	}
 }

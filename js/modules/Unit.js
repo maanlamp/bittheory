@@ -1,17 +1,19 @@
 import Vector2 from "./Vector2.js";
 
 export default class Unit {
-	constructor(x, y, sheet, spriteName, layer, game) {
-		this.game = game;
-		this.context = this.game.context;
+	constructor(x, y, sheet, spriteName) {
 		this.position = new Vector2(x, y);
 		this.sheet = sheet;
 		this.sprite = this.sheet.get(spriteName);
-		this.target = {position: this.position.copy()};
+		this.target = {position: new Vector2(x, y-.00001)};
 		this.selected = false;
 		this.selectionSize = Math.max(this.sprite.width, this.sprite.height) / 2;
-		this.layer = layer;
-		this.layer.objects.push(this);
+		this.layer = null;
+		this.game = null;
+	}
+	
+	get context() {
+		return this.game.context;;
 	}
 	
 	select() {
@@ -81,7 +83,7 @@ export default class Unit {
 		this.context.save();
 		this.context.translate(this.position.x, this.position.y);
 		this.context.rotate(Vector2.radians(this.direction));
-		this.context.drawImage(this.sheet.buffer, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, -this.sprite.width/2, -this.sprite.height/2, this.sprite.width, this.sprite.height);
+		this.context.drawImage(this.sheet.buffer, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, -this.sprite.offset.x, -this.sprite.offset.y, this.sprite.width, this.sprite.height);
 		this.context.restore();
 		
 		//Debug
@@ -96,22 +98,30 @@ export default class Unit {
 	static setPosition(to, selectedUnits) {
 		let i = selectedUnits.length;
 		const count = i;
-		if (selectedUnits instanceof Array) {
+		if (count > 1) {
 			while (i--) {
 				const pos = Vector2.from(to);
 				pos.add(Vector2.lenDir(count * 10, 360 / count * i));
 				selectedUnits[i].target.position.set(pos);
 			}
-		} else if (selectedUnits instanceof Unit) {
-			selectedUnits.target.position.set(to.x, to.y);
 		} else {
-			throw new Error(`Cannot edit target position of ${selectedUnits}: ${typeof selectedUnits} is not an Array or Unit`);
+			selectedUnits[0].target.position.set(to.x, to.y);
 		}
 	}
 	
 	move(deltaTime) {
 		if (!this.position.fuzzyEquals(this.target.position)) {
 			this.position.interpolate(this.target.position, deltaTime);
+			this.spawnParticle(deltaTime);
 		}
+	}
+	
+	spawnParticle(deltaTime) {
+		//
+	}
+	
+	update(deltaTime) {
+		this.move(deltaTime);
+		this.draw();
 	}
 }

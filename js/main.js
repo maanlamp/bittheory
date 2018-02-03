@@ -3,37 +3,53 @@ import Unit from "./modules/Unit.js";
 import {Spritesheet, BufferSprite} from "./modules/Sprite.js";
 import {loadJSON, loadImage} from "./modules/Load.js";
 import Layer from "./modules/Layer.js";
-import Game from "./modules/Game.js";
+import {Game, initialiseMousebinds} from "./modules/Game.js";
 import Camera from "./modules/Camera.js";
-import Keybind from "./modules/Keybind.js";
-
-function getMousePos(canvas, evt) {
-	const rect = canvas.getBoundingClientRect(),
-				scaleX = canvas.width / rect.width,
-				scaleY = canvas.height / rect.height;
-	return new Vector2((evt.clientX - rect.left) * scaleX, (evt.clientY - rect.top) * scaleY);
-}
+import {Keybind, initialiseKeybinds} from "./modules/Keybind.js";
+import Particle from "./modules/Particle.js";
 
 const GAME = new Game();
 GAME.canvas = document.querySelector("#viewPort");
 GAME.context = GAME.canvas.getContext("2d");
-			
+GAME.context.imageSmoothingEnabled = true;
+GAME.context.imageSmoothingQuality = "high";
 
 //Setup game functions
 function setup() {
 	return new Promise(resolve => {
-		let promises = [];
-		GAME.layers.push(new Layer(GAME.layers));
+		let promises = [],
+				sprites = [];
+		function loadSprite(path, folder, sprite) {
+			promises.push(loadImage(path));
+			const temp = sprite;
+			temp.name = `${folder.name}/${sprite.name}`;
+			sprites.push(temp);
+		}
+		GAME.layers.push(new Layer(GAME));
+		GAME.layers.push(new Layer(GAME));
 		GAME.spritesheets.push(new Spritesheet());
 		loadJSON("/data/sprites.json").then(json => {
 			json.folders.forEach(folder => {
-				folder.sprites.forEach(sprite => {
-					promises.push(loadImage(`${json.root}/${folder.name}/${sprite.name}.png`));
-				});
+				if (folder.sprites) { //Particles
+					folder.sprites.forEach(sprite => {
+						loadSprite(`${json.name}/${folder.name}/${sprite.name}.png`, folder, sprite);
+					});
+				} else { //Ships
+					folder.folders.forEach(folder => {
+						folder.sprites.forEach(sprite => {
+							loadSprite(`${json.name}/ships/${folder.name}/${sprite.name}.png`, folder, sprite);
+						});
+					});
+				}
 			});
 			Promise.all(promises).then(resolvedPromises => {
 				resolvedPromises.forEach(image => {
-					GAME.spritesheets[0].define(new BufferSprite(image, image.src));
+					let i = sprites.length;
+					while (i--) {
+						if (image.src.includes(sprites[i].name)) {
+							GAME.spritesheets[0].define(new BufferSprite(image, image.src, sprites[i].offset, sprites[i].exhausts));
+						}
+					}
 				});
 				resolve(GAME);
 			});
@@ -50,27 +66,26 @@ function update(currentTime) {
 	
 	GAME.context.fillRect(0, 0, GAME.canvas.width, GAME.canvas.height);
 	
-	if (!GAME.camera.position.equals(GAME.camera.target)) {
+	if (!GAME.camera.position.fuzzyEquals(GAME.camera.target)) {
 		GAME.camera.position.interpolate(GAME.camera.target, 1/10);
 		GAME.context.translate(GAME.camera.position.x, GAME.camera.position.y);
 	}
 	
 	let i = GAME.layers.length,
-			ii = GAME.units.length;
+			ii = GAME.layers[i - 1].objects.length;
 	while (i--) {
 		ii = GAME.layers[i].objects.length;
 		while (ii--) {
-			GAME.layers[i].objects[ii].draw();
-			GAME.layers[i].objects[ii].move(deltaTime);
+			GAME.layers[i].objects[ii].update(deltaTime);
 		}
 	}
 	
-	const prevfill = GAME.context.fillStyle;
+	GAME.context.save();
 	GAME.context.font = "18px 'Fira Mono', monospace";
 	GAME.context.fillStyle = "white";
 	GAME.context.fillText(`Closed alpha programme - Version ${GAME.version}`, 10, 28);
 	GAME.context.fillText(`fps: ${fps}/60`, 10, 48);
-	GAME.context.fillStyle = prevfill;
+	GAME.context.restore();
 	
 	if (GAME.selection.active) {
 		GAME.context.strokeRect(GAME.selection.start.x, GAME.selection.start.y, GAME.selection.w, GAME.selection.h);
@@ -87,108 +102,11 @@ function updateFPS() {
 }
 updateFPS();
 
-window.addEventListener("mousedown", event => {
-	if (event.button == 2) {
-		const units = GAME.selectedUnits,
-					pos = getMousePos(GAME.canvas, event);
-		Unit.setPosition(pos, units);
-	} else {
-		const pos = getMousePos(GAME.canvas, event);
-		GAME.selection.active = true;
-		GAME.selection.reset(pos);
-		GAME.selection.update(pos);
-	}
-});
-window.addEventListener("mousemove", event => {
-	if (event.button == 2) return;
-	if (event.buttons) {
-		const pos = getMousePos(GAME.canvas, event);
-		GAME.selection.update(pos);
-	}
-});
-window.addEventListener("mouseup", event => {
-	if (event.button == 2) return;
-	GAME.selection.active = false;
-	const allUnits = GAME.units,
-				unitsToSelect = GAME.unitsInsideSelection;
-	let 	i = allUnits.length,
-				ii = unitsToSelect.length;
-	if (!(event.ctrlKey || event.altKey)) {
-		while(i--) {
-			allUnits[i].deselect();
-		}
-	}
-	while(ii--) {
-		if (event.altKey) {
-			unitsToSelect[ii].deselect();
-		} else {
-			unitsToSelect[ii].select();
-		}
-	}
-});
-window.addEventListener("contextmenu", event => {
-	event.preventDefault();
-});
-
 const keybinds = new Map(),
 			keystate = new Map();
 GAME.camera = new Camera();
-keybinds.set("w", new Keybind(
-	() => {
-		GAME.camera.target.add(0, 10);
-	},
-	() => {
-		GAME.camera.target.subtract(0, 10);
-	}
-));
-keybinds.set("a", new Keybind(
-	() => {
-		GAME.camera.target.add(10, 0);
-	},
-	() => {
-		GAME.camera.target.subtract(10, 0);
-	}
-));
-keybinds.set("s", new Keybind(
-	() => {
-		GAME.camera.target.subtract(0, 10);
-	},
-	() => {
-		GAME.camera.target.add(0, 10);
-	}
-));
-keybinds.set("d", new Keybind(
-	() => {
-		GAME.camera.target.subtract(10, 0);
-	},
-	() => {
-		GAME.camera.target.add(10, 0);
-	}
-));
-
-const PRESSED = true,
-			RELEASED = false;
-for (let [key, value] of keybinds) {
-	keystate.set(key, RELEASED);
-}
-window.addEventListener("keydown", event => {
-	for (let [key, value] of keybinds) {
-		if (event.key === key && keystate.get(key) === RELEASED) {
-			keystate.set(event.key, PRESSED);
-			value.pressed();
-		}
-	}
-});
-window.addEventListener("keyup", event => {
-	event.preventDefault();
-	event.preventDefault();
-	for (let [key, value] of keybinds) {
-		if (event.key === key) {
-			keystate.set(event.key, RELEASED);
-			value.released();
-		}
-	}
-});
+initialiseKeybinds(keybinds, keystate, GAME);
+initialiseMousebinds(GAME);
 
 //Actual game
 setup().then(game => {
@@ -198,20 +116,26 @@ setup().then(game => {
 			100,
 			100,
 			game.spritesheets[0],
-			"alien/commander.png",
-			game.layers[0],
-			GAME
-		)
+			"alien/commander.png"
+		),
+		game.layers[0]
 	);
-	game.add(
-		new Unit(
-			300,
-			300,
-			game.spritesheets[0],
-			"human/grunt4.png",
-			game.layers[0],
-			GAME
-		)
-	);
+	let i = 300;
+	while (i--) {
+		game.add(
+			new Particle(
+				new Vector2(
+					Math.random()*game.canvas.width,
+					Math.random()*game.canvas.height
+				),
+				game.spritesheets[0],
+				"particles/exhaust1.png",
+				Math.random()*360,
+				Math.random()*100,
+				Math.random()*10000
+			),
+			game.layers[1]
+		);
+	}
 	update();
 });
