@@ -7,32 +7,32 @@
 						{ "name": "commander",
 							"offset": {"x": 57, "y": 93},
 							"exhausts": [
-							 {"len": 50, "dir": 155},
-							 {"len": 50, "dir": 205}
+							 {"len": 62, "dir": 161},
+							 {"len": 62, "dir": 199}
 						 ]
 						},
 						{ "name": "grunt1",
 							"offset": {"x": 34, "y": 42},
 							"exhausts": [
-							 {"len": 100, "dir": 180}
+							 {"len": 26, "dir": 180}
 						 ]
 						},
 						{ "name": "grunt2",
 							"offset": {"x": 35, "y": 19},
 							"exhausts": [
-							 {"len": 19, "dir": 180}
+							 {"len": 24, "dir": 180}
 						 ]
 						},
 						{ "name": "grunt3",
 							"offset": {"x": 35, "y": 32},
 							"exhausts": [
-							 {"len": 24, "dir": 180}
+							 {"len": 34, "dir": 180}
 						 ]
 						},
 						{ "name": "grunt4",
 							"offset": {"x": 32, "y": 41},
 							"exhausts": [
-							 {"len": 41, "dir": 180}
+							 {"len": 38, "dir": 180}
 						 ]
 						}
 					]
@@ -42,7 +42,7 @@
 						{ "name": "commander",
 							"offset": {"x": 79, "y": 90},
 							"exhausts": [
-							 {"len": 31, "dir": 180}
+							 {"len": 60, "dir": 180}
 						 ]
 						},
 						{ "name": "grunt1",
@@ -55,13 +55,13 @@
 						{ "name": "grunt2",
 							"offset": {"x": 33, "y": 29},
 							"exhausts": [
-							 {"len": 21, "dir": 180}
+							 {"len": 22, "dir": 180}
 						 ]
 						},
 						{ "name": "grunt3",
 						 "offset": {"x": 26, "y": 25},
 						 "exhausts": [
-							 {"len": 20, "dir": 180}
+							 {"len": 28, "dir": 180}
 						 ]
 						}
 					]
@@ -70,7 +70,8 @@
 		},
 		{ "name": "particles",
 			"sprites": [
-				{ "name": "exhaust1"}
+				{ "name": "human"},
+				{ "name": "alien"}
 			]
 		}
 	]

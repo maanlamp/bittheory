@@ -48,7 +48,7 @@ export default class Particle {
 	}
 	
 	update(deltaTime) {
-		this.lifetime += 1;
+		this.lifetime += 2.5 * deltaTime;
 		this.move(deltaTime);
 		this.draw();
 		if (this.alpha == 0) {
@@ -59,6 +59,7 @@ export default class Particle {
 	draw() {
 		this.context.save();
 		this.context.globalAlpha = this.alpha;
+		this.context.globalCompositeOperation = "lighter"
 		this.context.translate(this.position.x, this.position.y);
 		this.context.rotate(Vector2.radians(this.direction - 90));
 		this.context.drawImage(this.sheet.buffer, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, -this.sprite.width/2, -this.sprite.height/2, this.sprite.width, this.sprite.height);

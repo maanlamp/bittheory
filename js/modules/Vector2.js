@@ -138,7 +138,7 @@ export default class Vector2 {
 			return new Vector2(other[0], other[1]);
 		} else if (other instanceof Object) {
 			if (other instanceof Vector2) {
-				return other.copy()
+				return other.copy();
 			}
 			return new Vector2(other.x, other.y);
 		}
@@ -215,7 +215,7 @@ export default class Vector2 {
 		} else if (other.constructor.name === "Number") {
 			if (otherOther !== null) {
 				this.x += other;
-				this.y += otherOther
+				this.y += otherOther;
 			} else {
 				this.x += other;
 				this.y += other;

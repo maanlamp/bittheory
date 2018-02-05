@@ -1,4 +1,5 @@
 import Vector2 from "./Vector2.js";
+import Particle from "./Particle.js";
 
 export default class Unit {
 	constructor(x, y, sheet, spriteName) {
@@ -12,8 +13,21 @@ export default class Unit {
 		this.game = null;
 	}
 	
+	get isOnscreen() {
+		return (
+			this.position.x > 0 &&
+			this.position.y > 0 &&
+			this.position.x < this.game.canvas.width &&
+			this.position.y < this.game.canvas.height
+		);
+	}
+	
+	get faction() {
+		return this.sprite.name.match(/(alien)|(human)/g)[0];
+	}
+	
 	get context() {
-		return this.game.context;;
+		return this.game.context;
 	}
 	
 	select() {
@@ -75,6 +89,18 @@ export default class Unit {
 	}
 	
 	draw() {
+		if (!this.isOnscreen) {
+			return false;
+		}
+		//Debug
+		if (!this.position.fuzzyEquals(this.target.position)) {
+			this.context.beginPath();
+			const pos = this.position.added(Vector2.lenDir(this.selectionSize, this.direction - 90));
+			this.context.moveTo(pos.x, pos.y);
+			this.context.lineTo(this.target.position.x, this.target.position.y);
+			this.context.stroke();
+		}
+		
 		if (this.selected) {
 			this.context.beginPath();
 			this.context.ellipse(this.position.x, this.position.y, this.selectionSize, this.selectionSize, 0, 0, Math.PI * 2);
@@ -85,23 +111,20 @@ export default class Unit {
 		this.context.rotate(Vector2.radians(this.direction));
 		this.context.drawImage(this.sheet.buffer, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, -this.sprite.offset.x, -this.sprite.offset.y, this.sprite.width, this.sprite.height);
 		this.context.restore();
-		
-		//Debug
-		if (!this.position.fuzzyEquals(this.target.position)) {
-			this.context.beginPath();
-			this.context.moveTo(this.position.x, this.position.y);
-			this.context.lineTo(this.target.position.x, this.target.position.y);
-			this.context.stroke();
-		}
 	}
 	
-	static setPosition(to, selectedUnits) {
+	static setPosition(to, selectedUnits, size) {
+		if (selectedUnits[0] == undefined) {
+			return;
+		}
 		let i = selectedUnits.length;
-		const count = i;
+		const count = i,
+					avg = ((selectedUnits[0].sprite.width + selectedUnits[0].sprite.height) / 2) / i;
+		size = (size > avg) ? size : avg;
 		if (count > 1) {
 			while (i--) {
 				const pos = Vector2.from(to);
-				pos.add(Vector2.lenDir(count * 10, 360 / count * i));
+				pos.add(Vector2.lenDir(size, 360 / count * i - 90));
 				selectedUnits[i].target.position.set(pos);
 			}
 		} else {
@@ -110,18 +133,42 @@ export default class Unit {
 	}
 	
 	move(deltaTime) {
-		if (!this.position.fuzzyEquals(this.target.position)) {
-			this.position.interpolate(this.target.position, deltaTime);
-			this.spawnParticle(deltaTime);
-		}
+		this.position.interpolate(this.target.position, deltaTime);
 	}
 	
 	spawnParticle(deltaTime) {
-		//
+		if (this.game.particles.length >= this.game.maxParticles) {
+			return;
+		}
+		let i = this.sprite.exhausts.length;
+		while (i--) {
+			const exhaust = this.sprite.exhausts[i];
+			this.game.add(
+				new Particle(
+					this.position.subtracted(
+						Vector2.lenDir(
+							exhaust.len,
+							exhaust.dir + 90 + this.direction
+						)
+					),
+					this.game.spritesheets[0],
+					`particles/${this.faction}`,
+					this.direction + 180,
+					0,
+					25000 * deltaTime
+				),
+				this.game.layers[1]
+			);
+		}
 	}
 	
 	update(deltaTime) {
-		this.move(deltaTime);
 		this.draw();
+		if (!this.position.fuzzyEquals(this.target.position)) {
+			this.move(deltaTime);
+			if (this.isOnscreen) {
+				this.spawnParticle(deltaTime);
+			}
+		}
 	}
 }

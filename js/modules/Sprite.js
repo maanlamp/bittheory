@@ -12,10 +12,12 @@ export class Spritesheet {
 	
 	define(bufferSprite) {
 		//find a place for the sprite to fit onto the sheet
-		let x = 0, y = 0;
-		this.existingSprites.forEach(sprite => {
-			x += sprite.width + this.padding + 1;
-		});
+		let x = 0,
+				y = 0,
+				i = this.existingSprites.length;
+		while (i--) {
+			x += this.existingSprites[i].width + this.padding + 1;
+		};
 		bufferSprite.x = x;
 		bufferSprite.y = y;
 		

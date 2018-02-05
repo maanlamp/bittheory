@@ -9,11 +9,19 @@ class Selection {
 		this.end = new Vector2(0, 0);
 		this.w = 0;
 		this.h = 0;
+		this.target = {
+			start: new Vector2(0, 0),
+			end: new Vector2(0, 0),
+			radius: 0
+		};
 	}
 	
 	reset(pos) {
 		this.start = pos;
 		this.end.set(0);
+		this.target.start.set(0, 0);
+		this.target.end.set(0, 0);
+		this.target.radius = 0;
 	}
 	
 	update(pos) {
@@ -30,7 +38,8 @@ export class Game {
 		this.particles = [];
 		this.spritesheets = [];
 		this.selection = new Selection();
-		this.version = 0.3;
+		this.version = "0.4.2";
+		this.maxParticles = 2000;
 	}
 	
 	add(object, layer) {
@@ -77,11 +86,9 @@ export function initialiseMousebinds(game) {
 		return new Vector2((evt.clientX - rect.left) * scaleX, (evt.clientY - rect.top) * scaleY);
 	}
 	window.addEventListener("mousedown", event => {
-		if (event.button == 2) {
-			const units = game.selectedUnits,
-						pos = getMousePos(game.canvas, event);
-			Unit.setPosition(pos, units);
-		} else {
+		if (event.button == 2) { //Right click
+			game.selection.target.start.set(getMousePos(game.canvas, event));
+		} else { //Left click
 			const pos = getMousePos(game.canvas, event);
 			game.selection.active = true;
 			game.selection.reset(pos);
@@ -89,29 +96,38 @@ export function initialiseMousebinds(game) {
 		}
 	});
 	window.addEventListener("mousemove", event => {
-		if (event.button == 2) return;
-		if (event.buttons) {
+		if (event.buttons == 2) { //Right click
+			const pos = getMousePos(game.canvas, event);
+			game.selection.target.end.set(pos);
+			game.selection.target.radius = game.selection.target.start.distance(pos);
+		} else { //Left click
 			const pos = getMousePos(game.canvas, event);
 			game.selection.update(pos);
 		}
 	});
 	window.addEventListener("mouseup", event => {
-		if (event.button == 2) return;
-		game.selection.active = false;
-		const allUnits = game.units,
-					unitsToSelect = game.unitsInsideSelection;
-		let 	i = allUnits.length,
-					ii = unitsToSelect.length;
-		if (!(event.ctrlKey || event.altKey)) {
-			while(i--) {
-				allUnits[i].deselect();
+		if (event.button == 2) { //Right click
+			const units = game.selectedUnits,
+						pos = getMousePos(game.canvas, event);
+			Unit.setPosition(game.selection.target.start, units, game.selection.target.radius);
+			game.selection.reset(pos);
+		} else { //Left click
+			game.selection.active = false;
+			const allUnits = game.units,
+						unitsToSelect = game.unitsInsideSelection;
+			let 	i = allUnits.length,
+						ii = unitsToSelect.length;
+			if (!(event.ctrlKey || event.altKey)) {
+				while(i--) {
+					allUnits[i].deselect();
+				}
 			}
-		}
-		while(ii--) {
-			if (event.altKey) {
-				unitsToSelect[ii].deselect();
-			} else {
-				unitsToSelect[ii].select();
+			while(ii--) {
+				if (event.altKey) {
+					unitsToSelect[ii].deselect();
+				} else {
+					unitsToSelect[ii].select();
+				}
 			}
 		}
 	});

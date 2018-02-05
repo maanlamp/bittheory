@@ -6,7 +6,6 @@ import Layer from "./modules/Layer.js";
 import {Game, initialiseMousebinds} from "./modules/Game.js";
 import Camera from "./modules/Camera.js";
 import {Keybind, initialiseKeybinds} from "./modules/Keybind.js";
-import Particle from "./modules/Particle.js";
 
 const GAME = new Game();
 GAME.canvas = document.querySelector("#viewPort");
@@ -80,6 +79,23 @@ function update(currentTime) {
 		}
 	}
 	
+	if (!GAME.selection.target.start.equals(GAME.selection.target.end)) {
+		GAME.context.save();
+		GAME.context.translate(GAME.selection.target.start.x, GAME.selection.target.start.y);
+		GAME.context.beginPath();
+		GAME.context.ellipse(
+			0,
+			0,
+			GAME.selection.target.radius,
+			GAME.selection.target.radius,
+			0,
+			0,
+			Math.PI * 2
+		);
+		GAME.context.stroke();
+		GAME.context.restore();
+	}
+	
 	GAME.context.save();
 	GAME.context.font = "18px 'Fira Mono', monospace";
 	GAME.context.fillStyle = "white";
@@ -116,26 +132,93 @@ setup().then(game => {
 			100,
 			100,
 			game.spritesheets[0],
+			"alien/grunt1.png"
+		),
+		game.layers[0]
+	);
+	game.add(
+		new Unit(
+			200,
+			100,
+			game.spritesheets[0],
+			"alien/grunt2.png"
+		),
+		game.layers[0]
+	);
+	game.add(
+		new Unit(
+			300,
+			100,
+			game.spritesheets[0],
+			"alien/grunt3.png"
+		),
+		game.layers[0]
+	);
+	game.add(
+		new Unit(
+			400,
+			100,
+			game.spritesheets[0],
 			"alien/commander.png"
 		),
 		game.layers[0]
 	);
-	let i = 300;
+	game.add(
+		new Unit(
+			500,
+			100,
+			game.spritesheets[0],
+			"human/grunt1.png"
+		),
+		game.layers[0]
+	);
+	game.add(
+		new Unit(
+			600,
+			100,
+			game.spritesheets[0],
+			"human/grunt2.png"
+		),
+		game.layers[0]
+	);
+	game.add(
+		new Unit(
+			700,
+			100,
+			game.spritesheets[0],
+			"human/grunt3.png"
+		),
+		game.layers[0]
+	);
+	game.add(
+		new Unit(
+			800,
+			100,
+			game.spritesheets[0],
+			"human/grunt4.png"
+		),
+		game.layers[0]
+	);
+	game.add(
+		new Unit(
+			900,
+			100,
+			game.spritesheets[0],
+			"human/commander.png"
+		),
+		game.layers[0]
+	);
+	let i = 100;
 	while (i--) {
 		game.add(
-			new Particle(
-				new Vector2(
-					Math.random()*game.canvas.width,
-					Math.random()*game.canvas.height
-				),
-				game.spritesheets[0],
-				"particles/exhaust1.png",
-				Math.random()*360,
-				Math.random()*100,
-				Math.random()*10000
-			),
-			game.layers[1]
-		);
+		new Unit(
+			100+Math.random()*1080,
+			100+Math.random()*520,
+			game.spritesheets[0],
+			"human/grunt2.png"
+		),
+		game.layers[0]
+	);
 	}
 	update();
 });
