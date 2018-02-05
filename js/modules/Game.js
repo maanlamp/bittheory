@@ -38,7 +38,7 @@ export class Game {
 		this.particles = [];
 		this.spritesheets = [];
 		this.selection = new Selection();
-		this.version = "0.4.2";
+		this.version = "0.4.3";
 		this.maxParticles = 2000;
 	}
 	
