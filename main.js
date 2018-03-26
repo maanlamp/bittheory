@@ -1,0 +1,74 @@
+import {loadJSON, loadImage} from "./modules/Load.js";
+import Game from "./modules/game/Game.js";
+import Sprite from "./modules/sprite/Sprite.js";
+import Spritesheet from "./modules/sprite/Spritesheet.js";
+
+const GAME = new Game();
+window.Game = GAME;
+
+//Game functions
+function setup (game) {
+	return new Promise((resolve, reject) => {
+		Promise.all([
+			game.spritesheets[0].define(new Sprite("images/ships/human/commander.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/human/grunt1.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/human/grunt2.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/human/grunt3.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/human/grunt4.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/alien/commander.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/alien/grunt1.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/alien/grunt2.png")),
+			game.spritesheets[0].define(new Sprite("images/ships/alien/grunt3.png"))
+		]).then(sprites => {
+			resolve(game);
+		});
+	});
+}
+
+function update (game) {
+	const deltaTime = game.time.delta;
+
+	for (const entity of game.entities) {
+		entity.update(deltaTime);
+	}
+
+	game.viewport.context.fillRect(0, 0, game.viewport.width, game.viewport.height);
+	for (const layer of game.layers) {
+		for (const drawable of layer.drawables) {
+			drawable.draw();
+		}
+		layer.draw();
+	}
+
+	game.layers[2].canvas.context.fillText(`${game.fps} fps`, 10, 20);
+
+	requestAnimationFrame(timestamp => {
+		game.time.update(timestamp);
+		update(game);
+	});
+}
+
+//Game logic
+setup(GAME).then(game => {
+	console.log(`Bit Theory closed alpha programme v${game.version}\n`, game);
+	game.fpsSmoothing = .25;
+	game.viewport.context.fillStyle = "rgb(20, 20, 30)";
+	game.layers[2].canvas.context.fillStyle = "limeGreen";
+	game.layers[2].canvas.context.font = "18px Fira Mono";
+	let i = 10;
+	while (i--) {
+		game.add("unit", {
+			position: [Math.floor(Math.random()*1280),Math.floor(Math.random()*720) - 75],
+			layerIndex: 0,
+			spritesheetIndex: 0,
+			sprite: game.spritesheets[0].get(
+				game.spritesheets[0].sprites[
+					Math.floor(
+						Math.random() * game.spritesheets[0].sprites.length
+					)
+				].name
+			)
+		});
+	}
+	update(game);
+});

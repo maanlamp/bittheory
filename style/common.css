@@ -14,15 +14,3 @@ body {
 	width: 100vw;
 	height: 100vh;
 }
-
-p {
-	font-family: monospace;
-	color: rgba(255, 255, 255, .25);
-	width: 100%;
-	text-align: center;
-}
-
-p>span {
-	margin-left: .5rem;
-	color: rgba(255, 255, 255, .5);
-}

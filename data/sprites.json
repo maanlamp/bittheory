@@ -20,13 +20,13 @@
 						{ "name": "grunt2",
 							"offset": {"x": 35, "y": 19},
 							"exhausts": [
-							 {"len": 24, "dir": 180}
+							 {"len": 28, "dir": 180}
 						 ]
 						},
 						{ "name": "grunt3",
 							"offset": {"x": 35, "y": 32},
 							"exhausts": [
-							 {"len": 34, "dir": 180}
+							 {"len": 38, "dir": 180}
 						 ]
 						},
 						{ "name": "grunt4",
