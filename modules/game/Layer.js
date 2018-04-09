@@ -4,7 +4,7 @@ import Canvas from "../Canvas.js";
 export default class Layer {
 	constructor (game) {
 		this.game = game;
-		this.canvas = new Canvas(game.viewport.width, game.viewport.height);
+		this.canvas = new Canvas(game.viewport.width, game.viewport.height, window);
 		this.drawables = [];
 	}
 

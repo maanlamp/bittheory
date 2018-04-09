@@ -10,7 +10,7 @@ export default class Game {
 		this.time = new Time();
 		this.spritesheets = [new Spritesheet()];
 		this.entities = [];
-		this.viewport = new Canvas(1280, 720);
+		this.viewport = new Canvas(window.innerWidth, window.innerHeight, window);
 		this.viewport.buffer.id = "viewport";
 		const body = document.body;
 		body.insertBefore(this.viewport.buffer, body.firstChild);
