@@ -40,6 +40,11 @@ function update (game) {
 		layer.draw();
 	}
 
+	//refine later
+	if (game.mouse.prevX) {
+		game.layers[2].canvas.context.strokeRect(game.mouse.prevX, game.mouse.prevY, game.mouse.x - game.mouse.prevX, game.mouse.y - game.mouse.prevY);
+	}
+	//debug
 	game.layers[2].canvas.context.fillText(`${game.fps} fps`, 10, 20);
 
 	requestAnimationFrame(timestamp => {
@@ -54,11 +59,15 @@ setup(GAME).then(game => {
 	game.fpsSmoothing = .25;
 	game.viewport.context.fillStyle = "rgb(20, 20, 30)";
 	game.layers[2].canvas.context.fillStyle = "limeGreen";
+	game.layers[2].canvas.context.strokeStyle = "limeGreen";
 	game.layers[2].canvas.context.font = "18px Fira Mono";
 	let i = 10;
 	while (i--) {
 		game.add("unit", {
-			position: [Math.floor(Math.random()*1280),Math.floor(Math.random()*720) - 75],
+			position: [
+				100 + Math.floor(Math.random()*game.viewport.width - 200),
+				100 + Math.floor(Math.random()*game.viewport.height - 200)
+			],
 			layerIndex: 0,
 			spritesheetIndex: 0,
 			sprite: game.spritesheets[0].get(
