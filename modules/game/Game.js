@@ -7,17 +7,21 @@ import Canvas from "../Canvas.js";
 import Mouse from "./Mouse.js"
 
 export default class Game {
-	constructor (canvas) {
-		this.time = new Time();
-		this.spritesheets = [new Spritesheet()];
-		this.entities = [];
-		this.viewport = new Canvas(window.innerWidth, window.innerHeight, window);
+	constructor (options) {
+		this.time = options.time || new Time();
+		this.spritesheets = options.spritesheets || [new Spritesheet()];
+		this.entities = options.entities || [];
+		this.viewport = options.viewport || new Canvas({
+			width: window.innerWidth,
+			height: window.innerHeight,
+			parent: window
+		});
 		const body = document.body;
 		body.insertBefore(this.viewport.buffer, body.firstChild);
-		this.layers = [new Layer(this), new Layer(this), new Layer(this)];
-		this.version = "5.0.1";
+		this.layers = options.layers || [new Layer(this), new Layer(this), new Layer(this)];
+		this.version = options.version;
 		this._FPS = [];
-		this.mouse = new Mouse();
+		this.mouse = options.mouse || new Mouse();
 	}
 
 	set fpsSmoothing (smoothing) {
@@ -36,12 +40,12 @@ export default class Game {
 		return average;
 	}
 
-	add (type, args) {
+	add (type, options) {
 		switch (type.toUpperCase()) {
 			case "ENTITY":
-				return new Entity(args).attach(this);
+				return new Entity(options).attach(this);
 			case "UNIT":
-				return new Unit(args).attach(this);
+				return new Unit(options).attach(this);
 			default:
 				throw new Error(`Adding a ${type} is not supported.`);
 		}

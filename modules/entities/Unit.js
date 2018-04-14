@@ -2,11 +2,11 @@ import Entity from "./Entity.js";
 import Vector2 from "../Vector2.js";
 
 export default class Unit extends Entity {
-	constructor (args) {
-		super(args);
-		this.sprite = args.sprite;
-		this.spritesheetIndex = args.spritesheetIndex;
-		this.layerIndex = args.layerIndex;
+	constructor (options) {
+		super(options);
+		this.sprite = options.sprite;
+		this.spritesheetIndex = options.spritesheetIndex;
+		this.layerIndex = options.layerIndex;
 		this.direction = 0;
 	}
 

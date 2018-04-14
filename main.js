@@ -3,7 +3,9 @@ import Game from "./modules/game/Game.js";
 import Sprite from "./modules/sprite/Sprite.js";
 import Spritesheet from "./modules/sprite/Spritesheet.js";
 
-const GAME = new Game();
+const GAME = new Game({
+	version: "5.1.0"
+});
 window.Game = GAME;
 
 //Game functions

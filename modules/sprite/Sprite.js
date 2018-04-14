@@ -1,4 +1,4 @@
-import {loadImage} from "../Load.js";
+import { loadImage } from "../Load.js";
 
 class Offset {
 	constructor (x = 0, y = 0) {
@@ -18,13 +18,13 @@ export default class Sprite {
 		this.finalised = false;
 	}
 
-	finalise (x, y, width, height) {
+	finalise (options) {
 		delete this.image;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		this.x = options.x;
+		this.y = options.y;
+		this.width = options.width;
+		this.height = options.height;
 		this.finalised = true;
-		this.offset = new Offset(width / 2, height / 2);
+		this.offset = options.offset || new Offset(options.width / 2, options.height / 2);
 	}
 }

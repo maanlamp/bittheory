@@ -5,13 +5,13 @@ class IncompleteSavedContext {
 }
 
 export default class Canvas {
-	constructor (width = 16, height = 16, parent = null) {
+	constructor (options) {
 		this.buffer = document.createElement("CANVAS");
-		this.buffer.width = width;
-		this.buffer.height = height;
 		this.context = this.buffer.getContext("2d");
-		this.parent = parent;
 		this._SAVEDCONTEXT = new IncompleteSavedContext(this);
+		this.buffer.width = options.width || 16;
+		this.buffer.height = options.height || 16;
+		this.parent = options.parent || null;
 		try {
 			//When supported, set parent to other Canvases instead of window
 			this.parent.addEventListener("resize", event => {
@@ -19,7 +19,7 @@ export default class Canvas {
 			});
 		} catch (err) {
 			let type = (typeof parent).capitalise();
-			throw new Error(`Cannot add event listener to [${type} ${parent}].`);
+			throw new Error(`Cannot add event listener to [${type} ${this.parent}].`);
 		}
 	}
 

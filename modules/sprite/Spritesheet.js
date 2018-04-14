@@ -19,7 +19,12 @@ export default class Spritesheet {
 				this.context.putImageData(temp, 0, 0);
 				this.context.drawImage(image, x, y);
 				this.sprites.push(sprite);
-				sprite.finalise(x, y, image.width, image.height);
+				sprite.finalise({
+					x: x,
+					y: y,
+					width: image.width,
+					height: image.height
+				});
 				resolve(sprite);
 			});
 		});
