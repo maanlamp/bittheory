@@ -4,6 +4,7 @@ import Spritesheet from "../sprite/Spritesheet.js";
 import Unit from "../entities/Unit.js";
 import Entity from "../entities/Entity.js";
 import Canvas from "../Canvas.js";
+import Mouse from "./Mouse.js"
 
 export default class Game {
 	constructor (canvas) {
@@ -11,12 +12,12 @@ export default class Game {
 		this.spritesheets = [new Spritesheet()];
 		this.entities = [];
 		this.viewport = new Canvas(window.innerWidth, window.innerHeight, window);
-		this.viewport.buffer.id = "viewport";
 		const body = document.body;
 		body.insertBefore(this.viewport.buffer, body.firstChild);
 		this.layers = [new Layer(this), new Layer(this), new Layer(this)];
 		this.version = "5.0.1";
 		this._FPS = [];
+		this.mouse = new Mouse();
 	}
 
 	set fpsSmoothing (smoothing) {
