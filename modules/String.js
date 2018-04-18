@@ -97,14 +97,30 @@ String.prototype.hyphenate = function hyphenate () {
 	return this.words(false).join("-");
 }
 
-new Alias(String.prototype.capitalise,   "capitalize");
-new Alias(String.prototype.decapitalise, "decapitalize");
-new Alias(String.prototype.camelcasify,  "camelCasify");
-new Alias(String.prototype.toLowerCase,  "toLower");
-new Alias(String.prototype.toLowerCase,  "lower");
-new Alias(String.prototype.toUpperCase,  "toUpper");
-new Alias(String.prototype.toUpperCase,  "upper");
+String.prototype._OLDREPLACE = String.prototype.replace;
+String.prototype.replace = function replace (find, replacement) {
+	if (find instanceof RegExp || find instanceof String) {
+		return this._OLDREPLACE(find, replacement);
+	} else if (find instanceof Object) {
+		let ret = this;
+		for (const property in find) {
+			const value = find[property];
+			ret = ret._OLDREPLACE(property, value);
+		}
+		return ret;
+	} else {
+		throw new Error(`Cannot replace ${find.constructor.name} with ${replacement.constructor.name}`);
+	}
+}
+
+console.groupCollapsed("Aliasing...");
+new Alias(String.prototype, "capitalise",   "capitalize");
+new Alias(String.prototype, "decapitalise", "decapitalize");
+new Alias(String.prototype, "camelcasify",  "camelCasify");
+new Alias(String.prototype, "toLowerCase",  "toLower");
+new Alias(String.prototype, "toLowerCase",  "lower");
+new Alias(String.prototype, "toUpperCase",  "toUpper");
+new Alias(String.prototype, "toUpperCase",  "upper");
+console.groupEnd();
 
 //titlecasify -> Title Case is Geweldig!
-//Hyphenate (Woord woord -> Woord-woord)
-//Maak replace slimmer: als je object meegeeft gebruik keys als find en replace met values

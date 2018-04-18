@@ -18,7 +18,20 @@ export default class Game {
 		});
 		const body = document.body;
 		body.insertBefore(this.viewport.buffer, body.firstChild);
-		this.layers = options.layers || [new Layer(this), new Layer(this), new Layer(this)];
+		this.layers = options.layers || [
+			new Layer({
+				game: this,
+				parent: this.viewport
+			}),
+			new Layer({
+				game: this,
+				parent: this.viewport
+			}),
+			new Layer({
+				game: this,
+				parent: this.viewport
+			})
+		];
 		this.version = options.version;
 		this._FPS = [];
 		this.mouse = options.mouse || new Mouse();

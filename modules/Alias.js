@@ -1,16 +1,13 @@
 export default class Alias {
-	constructor (method, alias) {
+	constructor (prototype, method, alias) {
+		this.prototype = prototype;
 		this.method = method;
 		this.alias = alias;
-		switch (typeof method) {
-			case "string":
-				String.prototype[alias] = String.prototype[method];
-			break;
-			case "function":
-				String.prototype[alias] = method;
-			break;
-			default: throw new Error(`Can't alias ${method}`);
+		try {
+			this.prototype[alias] = this.prototype[method];
+		} catch (err) {
+			throw new Error(`Can't alias ${method}`);
 		}
-		console.log(`New alias: ${this.method.name} <-> ${this.alias}`);
+		console.log(`New ${this.prototype.constructor.name} alias: ${this.prototype[method].name} <-> ${this.alias}`);
 	}
 }

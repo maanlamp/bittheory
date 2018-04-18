@@ -1,4 +1,4 @@
-import {loadJSON, loadImage} from "./modules/Load.js";
+import { loadJSON, loadImage } from "./modules/Load.js";
 import Game from "./modules/game/Game.js";
 import Sprite from "./modules/sprite/Sprite.js";
 import Spritesheet from "./modules/sprite/Spritesheet.js";
@@ -60,9 +60,11 @@ setup(GAME).then(game => {
 	console.log(`Bit Theory closed alpha programme v${game.version}\n`, game);
 	game.fpsSmoothing = .25;
 	game.viewport.context.fillStyle = "rgb(20, 20, 30)";
-	game.layers[2].canvas.context.fillStyle = "limeGreen";
-	game.layers[2].canvas.context.strokeStyle = "limeGreen";
-	game.layers[2].canvas.context.font = "18px Fira Mono";
+	game.layers.forEach(layer => {
+		layer.canvas.context.fillStyle = "limeGreen";
+		layer.canvas.context.strokeStyle = "limeGreen";
+		layer.canvas.context.font = "18px Fira Mono";
+	});
 	let i = 10;
 	while (i--) {
 		game.add("unit", {
@@ -78,7 +80,8 @@ setup(GAME).then(game => {
 						Math.random() * game.spritesheets[0].sprites.length
 					)
 				].name
-			)
+			),
+			selected: !!Math.round(Math.random())
 		});
 	}
 	update(game);

@@ -12,14 +12,19 @@ export default class Canvas {
 		this.buffer.width = options.width || 16;
 		this.buffer.height = options.height || 16;
 		this.parent = options.parent || null;
-		try {
-			//When supported, set parent to other Canvases instead of window
+		if (this.parent instanceof Window) {
 			this.parent.addEventListener("resize", event => {
 				this.resizeTo(this.parent);
 			});
-		} catch (err) {
-			let type = (typeof parent).capitalise();
-			throw new Error(`Cannot add event listener to [${type} ${this.parent}].`);
+		} else if (this.parent instanceof Canvas && MutationObserver) {
+			const observer = new MutationObserver(mutations => {
+				mutations.forEach(mutation => {
+					this.resizeTo(this.parent);
+				});
+			});
+			observer.observe(this.parent.buffer, {
+				attributes: true
+			});
 		}
 	}
 
