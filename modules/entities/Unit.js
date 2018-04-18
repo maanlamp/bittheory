@@ -9,7 +9,6 @@ export default class Unit extends Entity {
 		this.layerIndex = options.layerIndex;
 		this.direction = 0;
 		this.selected = options.selected;
-		this._DRAWOPTIONS = {}
 	}
 
 	attach (game) {
@@ -34,11 +33,6 @@ export default class Unit extends Entity {
 		const r = [this.sprite.width, this.sprite.height].avg()
 		this.layer.canvas.context.save();
 		this.layer.canvas.context.translate(px, py);
-		if (this.selected) {
-			this.layer.canvas.context.beginPath();
-			this.layer.canvas.context.arc(0, 0, w * .75, 0, 359);
-			this.layer.canvas.context.stroke();
-		}
 		this.layer.canvas.context.rotate(Vector2.radians(this.direction + 90));
 		this.layer.canvas.context.drawImage(
 			this.spritesheet.buffer,
@@ -52,6 +46,11 @@ export default class Unit extends Entity {
 			h
 		);
 		this.layer.canvas.context.restore();
+		if (this.selected) {
+			this.game.layers[0].canvas.context.beginPath();
+			this.game.layers[0].canvas.context.arc(px, py, w * .75, 0, 359);
+			this.game.layers[0].canvas.context.stroke();
+		}
 	}
 
 	update (deltaTime) {

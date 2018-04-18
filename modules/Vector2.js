@@ -1,48 +1,48 @@
 export default class Vector2 {
-	constructor(x = 0, y = 0) {
+	constructor (x = 0, y = 0) {
 		this.x = x;
 		this.y = y;
 	}
 	
-	static lenDir(len, angle) {
+	static lenDir (len, angle) {
 		const x = len * Math.cos(Vector2.radians(angle)),
 					y = len * Math.sin(Vector2.radians(angle));
 		return new Vector2(x, y);
 	}
 	
-	static radians(degrees) {
+	static radians (degrees) {
 		return degrees * Math.PI / 180;
 	}
 
-	static degrees(radians) {
+	static degrees (radians) {
 		return radians * 180 / Math.PI;
 	}
 	
-	round(other) {
+	round (other) {
 		this.set(Math.round(this.x), Math.round(this.y));
 		return this;
 	}
-	rounded(other) {
+	rounded (other) {
 		return this.copy().round(other);
 	}
 	
-	ceil(other) {
+	ceil (other) {
 		this.set(Math.ceil(this.x), Math.ceil(this.y));
 		return this;
 	}
-	ceiled(other) {
+	ceiled (other) {
 		return this.copy().ceil(other);
 	}
 	
-	floor(other) {
+	floor (other) {
 		this.set(Math.floor(this.x), Math.floor(this.y));
 		return this;
 	}
-	floored(other) {
+	floored (other) {
 		return this.copy().floor(other);
 	}
 	
-	set(x, y = null) {
+	set (x, y = null) {
 		if (x instanceof Vector2) {
 			this.x = x.x;
 			this.y = x.y;
@@ -53,69 +53,68 @@ export default class Vector2 {
 		return this;
 	}
 	
-	equals(other) {
+	equals (other) {
 		return (this.x === other.x && this.y === other.y);
 	}
 	
-	fuzzyEquals(other) {
+	fuzzyEquals (other) {
 		return (this.rounded().x === other.rounded().x && this.rounded().y === other.rounded().y);
 	}
 	
-	interpolate(other, factor) {
+	interpolate (other, factor) {
 		let value = this.add(other.subtracted(this).multiplied(factor));
 		return value;
 	}
-	interpolated(other, factor) {
+	interpolated (other, factor) {
 		return this.copy().interpolate(other, factor);
 	}
 	
-	lerp(other) {
+	lerp (other) {
 		return this.interpolate(other, .5);
 	}
-	lerped(other) {
+	lerped (other) {
 		return this.interpolated(other, .5);
 	}
 	
-	get magnitude() {
+	get magnitude  () {
 		return Math.sqrt(this.x ** 2 + this.y ** 2);
 	}
 	
-	distance(other) {
+	distance (other) {
 		return this.subtracted(other).magnitude;
 	}
 	
-	angle(other, mode = "degrees") {
+	angle (other, mode = "degrees") {
 		let deltaX = other.x - this.x,
 				deltaY = other.y - this.y,
 				angle = Math.atan2(deltaY, deltaX) + Math.PI / 2;
 		if (mode.toLowerCase().includes("deg")) {
 			angle = Vector2.degrees(angle);
 			return (angle < 0) ? angle + 360 : angle;
-		}
-		else if (mode.toLowerCase().includes("rad")) {
+		} else if (mode.toLowerCase().includes("rad")) {
 			return angle;
 		} else {
 			throw new Error(`Unknown angle mode "${mode}"`);
 		}
 	}
 	
-	normalise() {
+	normalise () {
 		this.divide(this.magnitude());
 	}
 	
-	get normalised() {
-		return this.copy().divide(this.magnitude());
+	get normalised () {
+		return this.copy().normalise();
 	}
 	
-	scale(other) {
+	scale (other) {
 		this.multiply(other);
 	}
 	
-	scaled(other) {
+	scaled (other) {
 		return this.copy().multiply(other);
 	}
 	
-	copy(property) {
+	copy (property) {
 		if (typeof property === "string") {
 			switch (property) {
 				case "x": return new Vector2(this.x, 0);
@@ -125,8 +124,8 @@ export default class Vector2 {
 		}
 		return new Vector2(this.x, this.y);
 	}
-	
-	static from(other) {
+	 
+	static from (other) {
 		if (other instanceof Array) {
 			if (other.length > 2) {
 				let returnArray = [];
@@ -145,7 +144,7 @@ export default class Vector2 {
 		throw new Error(`Cannot create Vector2 from "${other}"`);
 	}
 	
-	subtract(other, otherOther = null) {
+	subtract (other, otherOther = null) {
 		if (other instanceof Vector2) {
 			this.x -= other.x;
 			this.y -= other.y;
@@ -162,11 +161,11 @@ export default class Vector2 {
 		}
 		return this;
 	}
-	subtracted(other, otherOther = null) {
+	subtracted (other, otherOther = null) {
 		return this.copy().subtract(other, otherOther);
 	}
 	
-	multiply(other, otherOther = null) {
+	multiply (other, otherOther = null) {
 		if (other instanceof Vector2) {
 			this.x *= other.x;
 			this.y *= other.y;
@@ -183,11 +182,11 @@ export default class Vector2 {
 		}
 		return this;
 	}
-	multiplied(other, otherOther = null) {
+	multiplied (other, otherOther = null) {
 		return this.copy().multiply(other, otherOther);
 	}
 	
-	divide(other, otherOther = null) {
+	divide (other, otherOther = null) {
 		if (other instanceof Vector2) {
 			this.x /= other.x || 1;
 			this.y /= other.y || 1;
@@ -204,11 +203,11 @@ export default class Vector2 {
 		}
 		return this;
 	}
-	divided(other, otherOther = null) {
+	divided (other, otherOther = null) {
 		return this.copy().divide(other, otherOther);
 	}
 	
-	add(other, otherOther = null) {
+	add (other, otherOther = null) {
 		if (other instanceof Vector2) {
 			this.x += other.x;
 			this.y += other.y;
@@ -225,7 +224,7 @@ export default class Vector2 {
 		}
 		return this;
 	}
-	added(other, otherOther = null) {
+	added (other, otherOther = null) {
 		return this.copy().add(other, otherOther);
 	}
 }

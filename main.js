@@ -34,6 +34,7 @@ function update (game) {
 		entity.update(deltaTime);
 	}
 
+	//Rework drawing: have a centralised drawer do all draws in batches, and for their respective layers instead of tracking 'drawables' per layer.
 	game.viewport.context.fillRect(0, 0, game.viewport.width, game.viewport.height);
 	for (const layer of game.layers) {
 		for (const drawable of layer.drawables) {
@@ -69,10 +70,10 @@ setup(GAME).then(game => {
 	while (i--) {
 		game.add("unit", {
 			position: [
-				100 + Math.floor(Math.random()*game.viewport.width - 200),
-				100 + Math.floor(Math.random()*game.viewport.height - 200)
+				100 + Math.floor(Math.random() * game.viewport.width - 200),
+				100 + Math.floor(Math.random() * game.viewport.height - 200)
 			],
-			layerIndex: 0,
+			layerIndex: 1,
 			spritesheetIndex: 0,
 			sprite: game.spritesheets[0].get(
 				game.spritesheets[0].sprites[

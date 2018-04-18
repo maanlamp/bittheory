@@ -39,7 +39,7 @@ export default class Game {
 
 	set fpsSmoothing (smoothing) {
 		this._FPS.length = 0;
-		let i = Math.round(60 * smoothing);
+		let i = Math.round(60 * smoothing) - 1 || 1;
 		while (i--) {
 			this._FPS.push(this.fps);
 		}
