@@ -22,33 +22,29 @@ export default class Unit extends Entity {
 	}
 
 	draw () {
-		const px = this.position.x;
-		const py = this.position.y;
-		const ox = this.sprite.offset.x;
-		const oy = this.sprite.offset.y;
-		const sx = this.sprite.x;
-		const sy = this.sprite.y;
-		const w = this.sprite.width;
-		const h = this.sprite.height;
+		const { x, y } = this.position;
+		const [ ox, oy ] = [this.sprite.offset.x, this.sprite.offset.y];
+		const [ sx, sy ] = [this.sprite.x, this.sprite.y];
+		const { width, height } = this.sprite;
 		const r = [this.sprite.width, this.sprite.height].avg()
 		this.layer.canvas.context.save();
-		this.layer.canvas.context.translate(px, py);
+		this.layer.canvas.context.translate(x, y);
 		this.layer.canvas.context.rotate(Vector2.radians(this.direction + 90));
 		this.layer.canvas.context.drawImage(
 			this.spritesheet.buffer,
 			sx,
 			sy,
-			w,
-			h,
+			width,
+			height,
 			-ox,
 			-oy,
-			w,
-			h
+			width,
+			height
 		);
 		this.layer.canvas.context.restore();
 		if (this.selected) {
 			this.game.layers[0].canvas.context.beginPath();
-			this.game.layers[0].canvas.context.arc(px, py, w * .75, 0, 359);
+			this.game.layers[0].canvas.context.arc(x, y, (width + height) / 3, 0, 359);
 			this.game.layers[0].canvas.context.stroke();
 		}
 	}

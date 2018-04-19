@@ -1,28 +1,28 @@
-import Alias from "./Alias.js";
+import extendPrototype from "./Extend.js";
 
 //Actual methods
-String.prototype.capitalise = function capitalise () {
+extendPrototype(String, function capitalise () {
 	return this[0].toUpperCase() + this.slice(1);
-}
+});
 
-String.prototype.decapitalise = function decapitalise () {
+extendPrototype(String, function decapitalise () {
 	return this[0].toLowerCase() + this.slice(1);
-}
+});
 
-String.prototype.camelcasify = function camelcasify () {
+extendPrototype(String, function camelcasify () {
 	const temp = this.replace(/[-_]/g, " ").words();
 	return temp[0].decapitalise() + temp.slice(1).map((element) => element.capitalise()).join("");
-}
+});
 
-String.prototype.first = function first (length = 1) {
+extendPrototype(String, function first () {
 	return this.slice(0, length);
-}
+});
 
-String.prototype.last = function last (length = 1) {
+extendPrototype(String, function last () {
 	return this.slice(-length);
-}
+});
 
-String.prototype.pad = function pad (length = 1, padString = " ") {
+extendPrototype(String, function pad (length = 1, padString = " ") {
 	switch (typeof length) {
 		case "number":
 			return this.padLeft(length, padString).padRight(length, padString.reverse());
@@ -33,9 +33,9 @@ String.prototype.pad = function pad (length = 1, padString = " ") {
 		break;
 		default: throw new Error(`Cannot pad with ${length}`);
 	}
-}
+});
 
-String.prototype.padLeft = function padLeft (length = 1, padString = " ") {
+extendPrototype(String, function padLeft (length = 1, padString = " ") {
 	switch (typeof length) {
 		case "number":
 		return padString.repeat(length) + this;
@@ -46,9 +46,9 @@ String.prototype.padLeft = function padLeft (length = 1, padString = " ") {
 		break;
 		default: throw new Error(`Cannot pad with ${length}`);
 	}
-}
+});
 
-String.prototype.padRight = function padRight (length = 1, padString = " ") {
+extendPrototype(String, function padRight (length = 1, padString = " ") {
 	switch (typeof length) {
 		case "number":
 		return this + padString.repeat(length);
@@ -59,68 +59,53 @@ String.prototype.padRight = function padRight (length = 1, padString = " ") {
 		break;
 		default: throw new Error(`Cannot pad with ${length}`);
 	}
-}
+});
 
-String.prototype.reverse = function reverse () {
+extendPrototype(String, function reverse () {
 	return this.letters().reverse().join("");
-}
+});
 
-String.prototype.letters = function letters () {
+extendPrototype(String, function letters () {
 	return this.match(/\w/g);
-}
+});
 
-String.prototype.punctuationMarks = function punctuationMarks () {
+extendPrototype(String, function punctuationMarks () {
 	return this.match(/[-[\]{}()*+?.,^$|#!'"]/g);
-}
+});
 
-String.prototype.escape = function escape () {
+extendPrototype(String, function escape () {
 	return this.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-}
+});
 
-String.prototype.characters = function characters (ignoreWhitespace = true) {
+extendPrototype(String, function characters (ignoreWhitespace = true) {
 	return (ignoreWhitespace) ? this.match(/\S/g) : [...this];
-}
+});
 
-String.prototype.truncate = function truncate (length, string = "...") {
+extendPrototype(String, function truncate (length, string = "...") {
 	return `${this.slice(0, length)}${string}`;
-}
+});
 
-String.prototype.words = function words (includeSpecialCharacters = true) {
+extendPrototype(String, function words (includeSpecialCharacters = true) {
 	return (includeSpecialCharacters) ? this.match(/\b[-'\w]+\b/g) : this.match(/\b\w+\b/g);
-}
+});
 
-String.prototype.wordCount = function wordCount () {
+extendPrototype(String, function wordCount () {
 	return this.words().length;
-}
+});
 
-String.prototype.hyphenate = function hyphenate () {
+extendPrototype(String, function hyphenate () {
 	return this.words(false).join("-");
-}
+});
 
-String.prototype._OLDREPLACE = String.prototype.replace;
-String.prototype.replace = function replace (find, replacement) {
-	if (find instanceof RegExp || find instanceof String) {
-		return this._OLDREPLACE(find, replacement);
-	} else if (find instanceof Object) {
-		let ret = this;
-		for (const property in find) {
-			const value = find[property];
-			ret = ret._OLDREPLACE(property, value);
-		}
-		return ret;
-	} else {
-		throw new Error(`Cannot replace ${find.constructor.name} with ${replacement.constructor.name}`);
-	}
-}
-
+import alias from "./Alias.js";
 console.groupCollapsed("Aliasing...");
-new Alias(String.prototype, "capitalise",   "capitalize");
-new Alias(String.prototype, "decapitalise", "decapitalize");
-new Alias(String.prototype, "camelcasify",  "camelCasify");
-new Alias(String.prototype, "toLowerCase",  "toLower");
-new Alias(String.prototype, "toLowerCase",  "lower");
-new Alias(String.prototype, "toUpperCase",  "toUpper");
-new Alias(String.prototype, "toUpperCase",  "upper");
+alias(String, "capitalise",   "capitalize");
+alias(String, "decapitalise", "decapitalize");
+alias(String, "camelcasify",  "camelCasify");
+alias(String, "toLowerCase",  "toLower");
+alias(String, "toLowerCase",  "lower");
+alias(String, "toUpperCase",  "toUpper");
+alias(String, "toUpperCase",  "upper");
 console.groupEnd();
 
 //titlecasify -> Title Case is Geweldig!

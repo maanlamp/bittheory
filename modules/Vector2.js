@@ -228,3 +228,14 @@ export default class Vector2 {
 		return this.copy().add(other, otherOther);
 	}
 }
+
+import alias from "./Alias.js";
+console.groupCollapsed("Aliasing...");
+alias(Vector2, "equals",      "eq");
+alias(Vector2, "add",         "plus");
+alias(Vector2, "subtract",    "minus");
+alias(Vector2, "divide",      "div");
+alias(Vector2, "multiply",    "mult");
+alias(Vector2, "distance",    "dist");
+alias(Vector2, "interpolate", "interp");
+console.groupEnd();

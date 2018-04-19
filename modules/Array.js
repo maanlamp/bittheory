@@ -1,46 +1,51 @@
-import Alias from "./Alias.js";
+import extendPrototype from "./Extend.js";
 
-Array.prototype.average = function average () {
-	return this.reduce((total, current) => total += current) / this.length;
+function toNumber(value) {
+	return Number(value) || 0;
 }
 
-Array.prototype.pluck = function pluck (value) {
-	const ret = [];
+extendPrototype(Array, function average () {
+	return this.reduce((total, current) => total += toNumber(current)) / this.length;
+});
+
+extendPrototype(Array, function pluck (value) {
+	const returnValue = [];
 	this.forEach(element => {
 		//maybe switch statement? idk
 		if (["string", "number"].includes(typeof value)) {
-			if (element === value) ret.push(element);
+			if (element === value) returnValue.push(element);
 		} else if (typeof value === "function") {
-			if (value(element)) ret.push(element);
+			if (value(element)) returnValue.push(element);
 		} else if (typeof value === "object") {
 			//mongo-like querying
 		};
 	});
-	return ret;
-}
+	return returnValue;
+});
 
-Array.prototype.reject = function reject (value) {
-	const temp = this.pluck(value);
-	return this.filter(element => !temp.includes(element));
-}
+extendPrototype(Array, function reject (value) {
+	const pluckedValues = this.pluck(value);
+	return this.filter(element => !pluckedValues.includes(element));
+});
 
-Array.prototype.max = function max () {
-	return this.reduce((max, current) => Math.max(max, current));
-}
+extendPrototype(Array, function max () {
+	return this.reduce((max, current) => Math.max(max, toNumber(current)));
+});
 
-Array.prototype.min = function min () {
-	return this.reduce((min, current) => Math.min(min, current));
-}
+extendPrototype(Array, function min () {
+	return this.reduce((min, current) => Math.min(min, toNumber(current)));
+});
 
-Array.prototype.first = function first () {
+extendPrototype(Array, function first () {
 	return this[0];
-}
+});
 
-Array.prototype.last = function last () {
+extendPrototype(Array, function last () {
 	return this[this.length - 1];
-}
+});
 
+import alias from "./Alias.js";
 console.groupCollapsed("Aliasing...");
-new Alias(Array.prototype, "average", "avg");
-new Alias(Array.prototype, "reject", "without");
+alias(Array, "average", "avg");
+alias(Array, "reject", "without");
 console.groupEnd();

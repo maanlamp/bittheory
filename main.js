@@ -27,6 +27,7 @@ function setup (game) {
 	});
 }
 
+//Let renderer do drawing and requesting animation frames
 function update (game) {
 	const deltaTime = game.time.delta;
 
@@ -34,7 +35,6 @@ function update (game) {
 		entity.update(deltaTime);
 	}
 
-	//Rework drawing: have a centralised drawer do all draws in batches, and for their respective layers instead of tracking 'drawables' per layer.
 	game.viewport.context.fillRect(0, 0, game.viewport.width, game.viewport.height);
 	for (const layer of game.layers) {
 		for (const drawable of layer.drawables) {
