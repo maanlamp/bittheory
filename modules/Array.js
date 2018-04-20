@@ -44,8 +44,18 @@ extendPrototype(Array, function last () {
 	return this[this.length - 1];
 });
 
+extendPrototype(Array, function clone () {
+	return this.slice();
+});
+
+extendPrototype(Array, function clear () {
+	this.length = 0;
+	return this;
+});
+
 import alias from "./Alias.js";
 console.groupCollapsed("Aliasing...");
 alias(Array, "average", "avg");
-alias(Array, "reject", "without");
+alias(Array, "reject",  "without");
+alias(Array, "clone",   "copy");
 console.groupEnd();

@@ -23,7 +23,8 @@ export default class Spritesheet {
 					x: x,
 					y: y,
 					width: image.width,
-					height: image.height
+					height: image.height,
+					spritesheet: this
 				});
 				resolve(sprite);
 			});

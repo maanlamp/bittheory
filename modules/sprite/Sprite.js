@@ -15,6 +15,7 @@ export default class Sprite {
 		this.y = 0;
 		this.width = 0;
 		this.height = 0;
+		this.spritesheet = null;
 		this.finalised = false;
 	}
 
@@ -24,6 +25,7 @@ export default class Sprite {
 		this.y = options.y;
 		this.width = options.width;
 		this.height = options.height;
+		this.spritesheet = options.spritesheet;
 		this.finalised = true;
 		this.offset = options.offset || new Offset(options.width / 2, options.height / 2);
 	}

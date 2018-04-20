@@ -1,4 +1,3 @@
-import { loadJSON, loadImage } from "./modules/Load.js";
 import Game from "./modules/game/Game.js";
 import Sprite from "./modules/sprite/Sprite.js";
 import Spritesheet from "./modules/sprite/Spritesheet.js";
@@ -35,20 +34,14 @@ function update (game) {
 		entity.update(deltaTime);
 	}
 
-	game.viewport.context.fillRect(0, 0, game.viewport.width, game.viewport.height);
-	for (const layer of game.layers) {
-		for (const drawable of layer.drawables) {
-			drawable.draw();
-		}
-		layer.draw();
-	}
+	game.renderer.render();
 
 	//refine later
 	if (game.mouse.prevX) {
-		game.layers[2].canvas.context.strokeRect(game.mouse.prevX, game.mouse.prevY, game.mouse.x - game.mouse.prevX, game.mouse.y - game.mouse.prevY);
+		game.renderer.layers[2].canvas.context.strokeRect(game.mouse.prevX, game.mouse.prevY, game.mouse.x - game.mouse.prevX, game.mouse.y - game.mouse.prevY);
 	}
 	//debug
-	game.layers[2].canvas.context.fillText(`${game.fps} fps`, 10, 20);
+	game.renderer.layers[2].canvas.context.fillText(`${game.fps} fps`, 10, 20);
 
 	requestAnimationFrame(timestamp => {
 		game.time.update(timestamp);
@@ -59,9 +52,9 @@ function update (game) {
 //Game logic
 setup(GAME).then(game => {
 	console.log(`Bit Theory closed alpha programme v${game.version}\n`, game);
-	game.fpsSmoothing = .25;
-	game.viewport.context.fillStyle = "rgb(20, 20, 30)";
-	game.layers.forEach(layer => {
+	game.fpsSmoothing = .5;
+	game.canvas.context.fillStyle = "rgb(20, 20, 30)";
+	game.renderer.layers.forEach(layer => {
 		layer.canvas.context.fillStyle = "limeGreen";
 		layer.canvas.context.strokeStyle = "limeGreen";
 		layer.canvas.context.font = "18px Fira Mono";
@@ -70,8 +63,8 @@ setup(GAME).then(game => {
 	while (i--) {
 		game.add("unit", {
 			position: [
-				100 + Math.floor(Math.random() * game.viewport.width - 200),
-				100 + Math.floor(Math.random() * game.viewport.height - 200)
+				100 + Math.floor(Math.random() * (game.canvas.width - 200)),
+				100 + Math.floor(Math.random() * (game.canvas.height - 200))
 			],
 			layerIndex: 1,
 			spritesheetIndex: 0,
@@ -86,4 +79,6 @@ setup(GAME).then(game => {
 		});
 	}
 	update(game);
+}).catch(error => {
+	throw error;
 });
