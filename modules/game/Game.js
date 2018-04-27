@@ -5,37 +5,36 @@ import Unit from "../entities/Unit.js";
 import Entity from "../entities/Entity.js";
 import Canvas from "../Canvas.js";
 import Mouse from "./Mouse.js"
-import Renderer from "./render/Renderer.js"
 
 export default class Game {
 	constructor (options) {
 		this.time = options.time || new Time();
 		this.spritesheets = options.spritesheets || [new Spritesheet()];
 		this.entities = options.entities || [];
-		this.canvas = options.viewport || new Canvas({
+		this.viewport = options.viewport || new Canvas({
 			width: window.innerWidth,
 			height: window.innerHeight,
 			parent: window
 		});
 		const body = document.body;
-		body.insertBefore(this.canvas.buffer, body.firstChild);
+		body.insertBefore(this.viewport.buffer, body.firstChild);
+		this.layers = options.layers || [
+			new Layer({
+				game: this,
+				parent: this.viewport
+			}),
+			new Layer({
+				game: this,
+				parent: this.viewport
+			}),
+			new Layer({
+				game: this,
+				parent: this.viewport
+			})
+		];
 		this.version = options.version;
 		this._FPS = [];
 		this.mouse = options.mouse || new Mouse();
-		this.renderer = options.renderer || new Renderer({
-			game: this,
-			layers: options.layers || [
-				new Layer({
-					parent: this
-				}),
-				new Layer({
-					parent: this
-				}),
-				new Layer({
-					parent: this
-				})
-			]
-		});
 	}
 
 	set fpsSmoothing (smoothing) {
@@ -49,7 +48,9 @@ export default class Game {
 	get fps () {
 		this._FPS.shift();
 		this._FPS.push(Math.floor(1 / this.time.delta));
-		return Math.round(this._FPS.average());
+		const total = this._FPS.reduce((totalFps, fps) => totalFps += fps);
+		const average = Math.floor(total / this._FPS.length);
+		return average;
 	}
 
 	add (type, options) {

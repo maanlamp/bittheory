@@ -6,14 +6,6 @@ export default class Entity {
 		this.game = null;
 	}
 
-	get x () {
-		return this.position.x;
-	}
-
-	get y () {
-		return this.position.y;
-	}
-
 	attach (game) {
 		this.game = game;
 		this.game.entities.push(this);
