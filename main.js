@@ -2,6 +2,7 @@ import { loadJSON, loadImage } from "./modules/Load.js";
 import Game from "./modules/game/Game.js";
 import Sprite from "./modules/sprite/Sprite.js";
 import Spritesheet from "./modules/sprite/Spritesheet.js";
+import id from "./modules/Identifier.js";
 
 const GAME = new Game({
 	version: "5.1.0"
@@ -64,9 +65,10 @@ setup(GAME).then(game => {
 	game.layers.forEach(layer => {
 		layer.canvas.context.fillStyle = "limeGreen";
 		layer.canvas.context.strokeStyle = "limeGreen";
+		layer.canvas.context.lineWidth = 1.5;
 		layer.canvas.context.font = "18px Fira Mono";
 	});
-	let i = 10;
+	let i = 100;
 	while (i--) {
 		game.add("unit", {
 			position: [
